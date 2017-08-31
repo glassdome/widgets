@@ -53,7 +53,8 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   def deleteWidget(id: Int) = Action { implicit request =>
     db.delete(id) match {
       case Failure(e) => HandleExceptions(e)
-      case Success(w) => Ok(w.toString)
+     // case Success(w) => Ok(w.toString)
+      case Success(w) =>  Ok(Json.toJson(w))
     }
   }
   
@@ -62,7 +63,7 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
 //      val widget: Widget = request.body.validate[Widget].get
       
 //      parseJson[Widget](request.body) match {
-//        case Failure(e) => HandleExceptions(e) 
+//        case Failure(e) => HandleExceptions(e)
 //        case Success(widget) => {
 //          db.create(widget) match {
 //            case Failure(e) => HandleExceptions(e)
@@ -92,10 +93,24 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
     }
   }
 
+ // val widget: Widget = request.body.validate[Widget].get
+
+  //      parseJson[Widget](request.body) match {
+
   def updateWidget(id: Int) = Action.async(parse.json) { implicit request =>
-    Future {
+   /* Future {
       val widget: Widget = request.body.validate[Widget].get
       db.update(widget) match {
+        case Failure(e) => HandleExceptions(e)
+        case Success(w) => Accepted(Json.toJson(w))
+      }
+    }*/
+
+    Future {
+      (for {
+        w1 <- parseJson[Widget](request.body)
+        w2 <- db.update(w1)
+      } yield w2 ) match {
         case Failure(e) => HandleExceptions(e)
         case Success(w) => Accepted(Json.toJson(w))
       }
