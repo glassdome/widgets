@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the
+ * This controller creates an `Action` to handle HTTP request to the
  * application's home page.
  */
 @Singleton
