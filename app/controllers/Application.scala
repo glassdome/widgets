@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the
+ * This controller creates an `Action` to handle HTTP request to the
  * application's home page.
  */
 @Singleton
@@ -40,65 +40,44 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   }
   
   def listWidgets() = Action { implicit request =>
-    //Ok(db.list.toString)
     Ok(Json.toJson(db.list.sortBy(_.id)))
   }
   
   def findWidget(id: Int) = Action { implicit request =>
     db.findById(id).fold {
-      HandleExceptions(throw WidgetNotFoundException(s"Widget with ID '$id' not found."))
+      HandleExceptions(WidgetNotFoundException(s"Widget with ID '$id' not found."))
     }{ w => Ok(Json.toJson(w)) }
   }
   
   def deleteWidget(id: Int) = Action { implicit request =>
     db.delete(id) match {
       case Failure(e) => HandleExceptions(e)
-      case Success(w) => Ok(w.toString)
+      case Success(w) =>  Ok(Json.toJson(w))
     }
   }
   
-  def createWidget() = Action.async(parse.json) { implicit request =>
-    Future {
-//      val widget: Widget = request.body.validate[Widget].get
-      
-//      parseJson[Widget](request.body) match {
-//        case Failure(e) => HandleExceptions(e) 
-//        case Success(widget) => {
-//          db.create(widget) match {
-//            case Failure(e) => HandleExceptions(e)
-//            case Success(w) => Created(Json.toJson(w))
-//          }
-//        }
-//      }
-      
-//      val maybeWidget = for {
-//        w1 <- parseJson[Widget](request.body)
-//        w2 <- db.create(w1)
-//      } yield w2
-//      
-//      maybeWidget match {
-//        case Failure(e) => HandleExceptions(e)
-//        case Success(w) => Created(Json.toJson(w))
-//      }
-      
-      (for {
-        w1 <- parseJson[Widget](request.body)
-        w2 <- db.create(w1)
-      } yield w2) match {
-        case Failure(e) => HandleExceptions(e)
-        case Success(w) => Created(Json.toJson(w))
-      }
-      
+  def createWidget() = Action(parse.json) { implicit request =>
+    val maybeWidget = for {
+      w1 <- parseJson[Widget](request.body)
+      w2 <- db.create(w1)
+    } yield w2
+    
+    maybeWidget match {
+      case Failure(e) => HandleExceptions(e)
+      case Success(w) => Created(Json.toJson(w))
     }
   }
 
-  def updateWidget(id: Int) = Action.async(parse.json) { implicit request =>
-    Future {
-      val widget: Widget = request.body.validate[Widget].get
-      db.update(widget) match {
-        case Failure(e) => HandleExceptions(e)
-        case Success(w) => Accepted(Json.toJson(w))
-      }
+  def updateWidget(id: Int) = Action(parse.json) { implicit request =>
+
+    val maybeWidget = for {
+      w1 <- parseJson[Widget](request.body)
+      w2 <- db.update(w1)
+    } yield w2
+    
+    maybeWidget match {
+      case Failure(e) => HandleExceptions(e)
+      case Success(w) => Accepted(Json.toJson(w))
     }
   }
   
