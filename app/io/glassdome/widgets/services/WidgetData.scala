@@ -8,6 +8,8 @@ import io.glassdome.widgets.models.Widget
 import scala.collection.mutable.{HashMap, Map}
 import io.glassdome.widgets.services.errors._
 import play.api.libs.json._
+import scala.collection.immutable.{Map => ImmutableMap}
+
 
 trait WidgetData {
   
@@ -71,52 +73,76 @@ object MapWidgetData extends WidgetData {
     path.getOrElse("")
   }
 
-  def loadData(): Map[Int, Widget] = {
-    val ws = Seq(
-      Widget(1, "alpha", Some("The first widget!")),
-      Widget(2, "beta", Some("The second widget!")),
-      Widget(3, "charlie"),
-      Widget(4, "delta", Some("The fourth widget!")),
-      Widget(5, "echo", Some("Just a widget")))
-
-    ws foreach { w => create(w) }
-    widgets
-  }
-
-
-  def load():  Map[Int, Widget] = {
+  
+  def save(path: String = filePath): Unit = {
     val file = new File(filePath)
-    val stream = new FileInputStream(file)
-    val json = try {
-      Json.parse(stream)
-    } finally {
-      stream.close()
-    }
-
-    val js = json.toString()
-    val jsMap = js.drop(1).dropRight(1)split("}")
-    val jsMap2 = jsMap map (x => x.dropWhile(p => (p == '{' || p == ','))) map ( "{" + _ + "}" )
-
-    for( i <- jsMap2 ) yield  {
-      val jv: JsValue = Json.parse(i)
-      val widgetFromJson: JsResult[Widget] = Json.fromJson[Widget](jv)
-      widgetFromJson match {
-        case JsSuccess(w: Widget, path: JsPath) => create(widgetFromJson.get)
-        case e: JsError => println("Errors: " + JsError.toJson(e).toString())
-      }
-    }
-    widgets
-  }
-
-  def save(): Unit = {
-    val file = new File(filePath)
-    val bw = new BufferedWriter(new FileWriter(file))
-    val jsonString = Json.toJson((widgets.map { case (k, v) => v }).
-      toSeq.sortBy(_.id)).toString()
-
+    val bw = new BufferedWriter(new FileWriter(file, false))
+    
+    // Convert Int key to String for valid JSON.
+    val stringKeys = widgets.map { case (k,v) => (k.toString -> v) }
+    val jsonString = Json.prettyPrint(Json.toJson(stringKeys))
+    
     bw.write(jsonString)
     bw.close()
+  }  
+  
+  
+  def load(path: String = filePath): Map[Int, Widget] = {
+    val file   = new File(filePath)
+    
+    if (!file.exists()) {
+      println("***Widget datafile not found. There are no widgets to load.")
+      Map()      
+    }
+    else {
+      val stream = new FileInputStream(file)
+      val json   = try { Json.parse(stream) } finally { stream.close() }
+      
+      val w = json.validate[ImmutableMap[String, Widget]].map { 
+        case a => a }.recoverTotal { e =>
+          throw new RuntimeException("Failed Loading Widget DB: " + JsError.toJson(e).toString)
+      }
+      // Convert String key in datafile to Int key for Map
+      widgets ++= (w map { case (k, v) => (k.toInt -> v) })
+    }
   }
+  
+  
+//  def load():  Map[Int, Widget] = {
+//    val file = new File(filePath)
+//    val stream = new FileInputStream(file)
+//    val json = try {
+//      Json.parse(stream)
+//    } finally {
+//      stream.close()
+//    }
+//
+//    val js = json.toString()
+//    val jsMap = js.drop(1).dropRight(1)split("}")
+//    val jsMap2 = jsMap map (x => x.dropWhile(p => (p == '{' || p == ','))) map ( "{" + _ + "}" )
+//
+//    for( i <- jsMap2 ) yield  {
+//      val jv: JsValue = Json.parse(i)
+//      val widgetFromJson: JsResult[Widget] = Json.fromJson[Widget](jv)
+//      widgetFromJson match {
+//        case JsSuccess(w: Widget, path: JsPath) => create(widgetFromJson.get)
+//        case e: JsError => println("Errors: " + JsError.toJson(e).toString())
+//      }
+//    }
+//    widgets
+//  }
+//
+//  def save(): Unit = {
+//    val file = new File(filePath)
+//    val bw = new BufferedWriter(new FileWriter(file))
+//    val jsonString = Json.toJson((widgets.map { case (k, v) => v }).
+//      toSeq.sortBy(_.id)).toString()
+//
+//    bw.write(jsonString)
+//    bw.close()
+//  }
+  
+
 }
 
 
