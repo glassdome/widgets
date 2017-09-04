@@ -23,7 +23,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * - 
  */
 
-
 /**
  * This controller creates an `Action` to handle HTTP request to the
  * application's home page.
@@ -32,14 +31,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class Application @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
   private val db = MapWidgetData
-  
-  db.loadData()
+  //db.loadData()
+  db.load()
   
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok("Welcome to Widgets!")
   }
   
   def listWidgets() = Action { implicit request =>
+
+    db.load()
+   // db.loadData()
     Ok(Json.toJson(db.list.sortBy(_.id)))
   }
   
@@ -52,7 +54,7 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   def deleteWidget(id: Int) = Action { implicit request =>
     db.delete(id) match {
       case Failure(e) => HandleExceptions(e)
-      case Success(w) =>  Ok(Json.toJson(w))
+      case Success(w) =>  {db.save();Ok(Json.toJson(w))}
     }
   }
   
@@ -64,7 +66,7 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
     
     maybeWidget match {
       case Failure(e) => HandleExceptions(e)
-      case Success(w) => Created(Json.toJson(w))
+      case Success(w) => {db.save(); Created(Json.toJson(w))}
     }
   }
 
@@ -77,7 +79,7 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
     
     maybeWidget match {
       case Failure(e) => HandleExceptions(e)
-      case Success(w) => Accepted(Json.toJson(w))
+      case Success(w) => {db.save(); Accepted(Json.toJson(w))}
     }
   }
   
