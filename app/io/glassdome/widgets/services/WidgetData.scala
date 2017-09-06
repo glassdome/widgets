@@ -26,7 +26,6 @@ trait WidgetData {
 }
 
 
-
 object MapWidgetData extends WidgetData {
 
   private val widgets = new HashMap[Int, Widget]()
@@ -63,87 +62,85 @@ object MapWidgetData extends WidgetData {
     }
   }
 
+  def isEmpty = widgets.isEmpty
+
+
   private def concat(w: Widget) = {
     widgets += (w.id -> w)
     w
   }
 
-  private def getFilePath(envVar: String): String ={
+  private def getFilePath(envVar: String): String = {
     val path = scala.util.Properties.envOrNone(envVar)
     path.getOrElse("")
   }
 
-  
+  /*
+  * Checks what path separator to use based on OS
+  * */
+  private def whatPathSep : String = {
+    val whatOS = System.getProperty("os.name")
+    val pathSep = whatOS match {
+      case x if x.toLowerCase contains ("windows") => """\\"""
+      case x if x.toLowerCase contains ("mac") => """/"""
+      case _ => ' '
+    }
+    pathSep.toString
+  }
+
+   def folderWritePermission(path: String): Boolean = {
+     val folder = new File(path)
+     val pathSep = whatPathSep
+
+     //if the path leads to a file, not a folder,  then get handle to its folder
+     val path2 = path.split(whatPathSep).dropRight(1).mkString(sep = whatPathSep)
+     val folder2 = new File(path2)
+
+     if (folder.exists && folder.isDirectory) {
+       folder.canWrite
+     }
+     else if (folder2.exists && folder2.isDirectory) {
+       folder2.canWrite
+     }
+     else {
+       false
+     }
+  }
+
+
   def save(path: String = filePath): Unit = {
     val file = new File(filePath)
     val bw = new BufferedWriter(new FileWriter(file, false))
-    
+
     // Convert Int key to String for valid JSON.
-    val stringKeys = widgets.map { case (k,v) => (k.toString -> v) }
+    val stringKeys = widgets.map { case (k, v) => (k.toString -> v) }
     val jsonString = Json.prettyPrint(Json.toJson(stringKeys))
-    
+
     bw.write(jsonString)
     bw.close()
-  }  
-  
-  
+  }
+
+
   def load(path: String = filePath): Map[Int, Widget] = {
-    val file   = new File(filePath)
-    
+    val file = new File(filePath)
     if (!file.exists()) {
       println("***Widget datafile not found. There are no widgets to load.")
-      Map()      
+      Map()
     }
+    else if (file.length() == 0)  Map()
     else {
       val stream = new FileInputStream(file)
-      val json   = try { Json.parse(stream) } finally { stream.close() }
-      
-      val w = json.validate[ImmutableMap[String, Widget]].map { 
-        case a => a }.recoverTotal { e =>
-          throw new RuntimeException("Failed Loading Widget DB: " + JsError.toJson(e).toString)
+      val json = try {Json.parse(stream)} finally {stream.close()}
+      val w = json.validate[ImmutableMap[String, Widget]].map {
+        case a => a
+      }.recoverTotal { e =>
+        throw new RuntimeException("Failed Loading Widget DB: " + JsError.toJson(e).toString)
       }
       // Convert String key in datafile to Int key for Map
       widgets ++= (w map { case (k, v) => (k.toInt -> v) })
     }
   }
-  
-  
-//  def load():  Map[Int, Widget] = {
-//    val file = new File(filePath)
-//    val stream = new FileInputStream(file)
-//    val json = try {
-//      Json.parse(stream)
-//    } finally {
-//      stream.close()
-//    }
-//
-//    val js = json.toString()
-//    val jsMap = js.drop(1).dropRight(1)split("}")
-//    val jsMap2 = jsMap map (x => x.dropWhile(p => (p == '{' || p == ','))) map ( "{" + _ + "}" )
-//
-//    for( i <- jsMap2 ) yield  {
-//      val jv: JsValue = Json.parse(i)
-//      val widgetFromJson: JsResult[Widget] = Json.fromJson[Widget](jv)
-//      widgetFromJson match {
-//        case JsSuccess(w: Widget, path: JsPath) => create(widgetFromJson.get)
-//        case e: JsError => println("Errors: " + JsError.toJson(e).toString())
-//      }
-//    }
-//    widgets
-//  }
-//
-//  def save(): Unit = {
-//    val file = new File(filePath)
-//    val bw = new BufferedWriter(new FileWriter(file))
-//    val jsonString = Json.toJson((widgets.map { case (k, v) => v }).
-//      toSeq.sortBy(_.id)).toString()
-//
-//    bw.write(jsonString)
-//    bw.close()
-//  }
-  
-
-}
+}//end load()
 
 
 
