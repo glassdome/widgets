@@ -4,7 +4,7 @@ package controllers
 import javax.inject._
 import play.api._
 import play.api.mvc._
-import io.glassdome.widgets.services.MapWidgetData
+import io.glassdome.widgets.services._
 import io.glassdome.widgets.services.errors._
 
 import play.api.libs.json._
@@ -30,10 +30,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 @Singleton
 class Application @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
-
-  private val db = MapWidgetData
   
-  db.loadData()
+  private val db = new DataService(MapWidgetData)
+  
   
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok("Welcome to Widgets!")
@@ -80,6 +79,9 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
       case Success(w) => Accepted(Json.toJson(w))
     }
   }
+  
+  def options(path: String) = Action {Ok("")}
+  
   
   private def HandleExceptions(ex: Throwable): Result = ex match {
     case e: UnprocessableException  => UnprocessableEntity(e.toJson)
