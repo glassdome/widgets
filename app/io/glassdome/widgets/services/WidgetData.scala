@@ -123,22 +123,29 @@ object MapWidgetData extends WidgetData {
 
   def load(path: String = filePath): Map[Int, Widget] = {
     val file = new File(filePath)
-    if (!file.exists()) {
+    if (!file.exists() ) {
       println("***Widget datafile not found. There are no widgets to load.")
       Map()
     }
-    else if (file.length() == 0)  Map()
-    else {
-      val stream = new FileInputStream(file)
-      val json = try {Json.parse(stream)} finally {stream.close()}
-      val w = json.validate[ImmutableMap[String, Widget]].map {
-        case a => a
-      }.recoverTotal { e =>
-        throw new RuntimeException("Failed Loading Widget DB: " + JsError.toJson(e).toString)
+    else if (folderWritePermission(filePath)) {
+      if (file.length() == 0) Map()
+      else {
+        val stream = new FileInputStream(file)
+        val json = try {
+          Json.parse(stream)
+        } finally {
+          stream.close()
+        }
+        val w = json.validate[ImmutableMap[String, Widget]].map {
+          case a => a
+        }.recoverTotal { e =>
+          throw new RuntimeException("Failed Loading Widget DB: " + JsError.toJson(e).toString)
+        }
+        // Convert String key in datafile to Int key for Map
+        widgets ++= (w map { case (k, v) => (k.toInt -> v) })
       }
-      // Convert String key in datafile to Int key for Map
-      widgets ++= (w map { case (k, v) => (k.toInt -> v) })
     }
+    else {throw new RuntimeException("NO Permisions to save widgets")}
   }
 }//end load()
 
