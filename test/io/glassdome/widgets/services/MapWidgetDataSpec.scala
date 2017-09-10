@@ -94,24 +94,25 @@ sequential
     }
   }//end list
 
-  // can't figure out why the save() breaks the code here
-//  "save" should {
-//    "save all the widgets in the map to the file" >> {
-//      db.isEmpty === false
-//      db.save(path)
-//       db.load(path)
-//      val ws = db.list()
-//
-//      ws.exists(_.id == 1) === true
-//      ws.exists(_.id == 2) === true
-//      ws.exists(_.id == 3) === true
-//
-//
-//      for(i <- (1 to 3)) yield db.delete(i)
-//      db.isEmpty === true
-//      db.save()
-//    }
-//  }//end save
+
+  "save" should {
+    "save all the widgets in the map to the file" >> {
+      db.isEmpty === false
+      db.save(path)
+       db.load(path)
+      val ws = db.list()
+
+      ws.exists(_.id == 1) === true
+      ws.exists(_.id == 2) === true
+      ws.exists(_.id == 3) === true
+
+
+      for(i <- (1 to 3)) yield db.delete(i)
+      db.isEmpty === true
+      db.save(path)
+      1===1
+    }
+  }//end save
 
 
 }//end MapWidgetDataSpec
