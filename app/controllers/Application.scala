@@ -15,7 +15,7 @@ import io.glassdome.widgets.models._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-  
+import play.api.inject.ApplicationLifecycle
 
 /*
  * TODO:
@@ -23,17 +23,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * - 
  */
 
-
 /**
  * This controller creates an `Action` to handle HTTP request to the
  * application's home page.
  */
 @Singleton
-class Application @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class Application @Inject()(
+    cc: ControllerComponents,
+    lifecycle: ApplicationLifecycle) extends AbstractController(cc) {
 
   private val db = MapWidgetData
-  
-  db.loadData()
+
+  db.load()
+
+  /*
+   *  This will write the widget data file when the application shuts-down
+   */
+  lifecycle.addStopHook { () =>
+    Future.successful(db.save())
+  }
   
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok("Welcome to Widgets!")
