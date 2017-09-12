@@ -20,13 +20,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 
 
-
 /*
  * TODO:
  * - Implement `safe` JSON parsing in POST and PUT methods
  * - 
  */
-
 
 /**
  * This controller creates an `Action` to handle HTTP request to the
