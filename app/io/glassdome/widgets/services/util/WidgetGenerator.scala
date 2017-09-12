@@ -9,7 +9,7 @@ import scala.util.Random
 object WidgetGenerator {
   
   private val left = Seq("admiring", "adoring", "affectionate", "agitated", "amazing", "angry", "awesome", "blissful", "boring", "brave", "clever", "cocky", "compassionate", "competent", "condescending", "confident", "cranky", "dazzling", "determined", "distracted", "dreamy", "eager", "ecstatic", "elastic", "elated", "elegant", "eloquent", "epic", "fervent", "festive", "flamboyant", "focused", "friendly", "frosty", "gallant", "gifted", "goofy", "gracious", "happy", "hardcore", "heuristic", "hopeful", "hungry", "infallible", "inspiring", "jolly", "jovial", "keen", "kind", "laughing", "loving", "lucid", "mystifying", "modest", "musing", "naughty", "nervous", "nifty", "nostalgic", "objective", "optimistic", "peaceful", "pedantic", "pensive", "practical", "priceless", "quirky", "quizzical", "relaxed", "reverent", "romantic", "sad", "serene", "sharp", "silly", "sleepy", "stoic", "stupefied", "suspicious", "tender", "thirsty", "trusting", "unruffled", "upbeat", "vibrant", "vigilant", "vigorous", "wizardly", "wonderful", "xenodochial", "youthful", "zealous", "zen")
-  private val right = Set("Andromeda", "Aquarius", "Aquila", "Ara", "Aries", "Auriga", "Boötes", "Camelopardalis", "Cancer", "Canes", "Canis", "Capricornus", "Carina", "CassiopCassBoötes", "Cassiopeia", "Centaurus", "Cepheus", "Cetus", "Columba", "Coma", "Corona", "Corvus", "Crater", "Crux", "Cygnus", "Delphinus", "Draco", "Equuleus", "Eridanus", "Gemini", "Grus", "HeHeHeHeHersa", "Hercules", "Hydra", "Leo", "Lepus", "Libra", "Lynx", "Lyra", "Octans", "Ophiuchus", "Orion", "Pavo", "Pegasus", "Perseus", "Phoenix", "Pisces", "Piscis", "Puppis", "SSSSSSSSSSorpius", "Sagittarius", "Scorpius", "Serpens", "Taurus", "Triangulum", "Ursa", "Vela", "Virgo", "Vulpecula","Eridanus")
+  private val right = Seq("Andromeda", "Aquarius", "Aquila", "Ara", "Aries", "Auriga", "Boötes", "Camelopardalis", "Cancer", "Canes", "Canis", "Capricornus", "Carina", "CassiopCassBoötes", "Cassiopeia", "Centaurus", "Cepheus", "Cetus", "Columba", "Coma", "Corona", "Corvus", "Crater", "Crux", "Cygnus", "Delphinus", "Draco", "Equuleus", "Eridanus", "Gemini", "Grus", "HeHeHeHeHersa", "Hercules", "Hydra", "Leo", "Lepus", "Libra", "Lynx", "Lyra", "Octans", "Ophiuchus", "Orion", "Pavo", "Pegasus", "Perseus", "Phoenix", "Pisces", "Piscis", "Puppis", "SSSSSSSSSSorpius", "Sagittarius", "Scorpius", "Serpens", "Taurus", "Triangulum", "Ursa", "Vela", "Virgo", "Vulpecula","Eridanus")
   private val seps = Seq(" ", "_", "-", ".")
   
   private val lmax = left.size
@@ -23,7 +23,7 @@ object WidgetGenerator {
   
   def make(n: Int, startId: Int = 1) = {
     Seq((startId to n):_*) map { i =>
-      Widget(i, "%s%s%s".format(getleft, getsep, getright))
+      Widget(i, "%s%s%s".format(getleft, getsep, getright), 1)
     }
   }
   

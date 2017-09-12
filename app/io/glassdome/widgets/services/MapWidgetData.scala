@@ -51,11 +51,11 @@ object MapWidgetData extends WidgetData {
   
   def loadData(): Map[Int, Widget] = {
     val ws = Seq(
-        Widget(1, "alpha", Some("The first widget!")),
-        Widget(2, "beta", Some("The second widget!")),
-        Widget(3, "charlie"),
-        Widget(4, "delta", Some("The fourth widget!")),
-        Widget(5, "echo", Some("Just a widget")))
+        Widget(1, "alpha", 1, Some("The first widget!")),
+        Widget(2, "beta", 1, Some("The second widget!")),
+        Widget(3, "charlie", 1),
+        Widget(4, "delta", 1, Some("The fourth widget!")),
+        Widget(5, "echo", 1, Some("Just a widget")))
    
     ws foreach { w => create(w) }
     widgets

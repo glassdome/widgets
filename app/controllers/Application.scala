@@ -5,6 +5,7 @@ import javax.inject._
 import play.api._
 import play.api.mvc._
 import io.glassdome.widgets.services._
+import io.glassdome.widgets.services.util.PgConnect
 import io.glassdome.widgets.services.errors._
 
 import play.api.libs.json._
@@ -16,6 +17,9 @@ import io.glassdome.widgets.models._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
   
+import org.slf4j.LoggerFactory
+
+
 
 /*
  * TODO:
@@ -31,8 +35,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class Application @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
   
-  private val db = new DataService(MapWidgetData)
-  
+  PgConnect.openConnection()
+    
+  private[this] val log = LoggerFactory.getLogger(this.getClass)
+  private val db = new DataService(PostgresWidgetData)
+
   
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok("Welcome to Widgets!")
@@ -56,9 +63,12 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   }
   
   def createWidget() = Action(parse.json) { implicit request =>
+    log.debug("createWidget(_): " + Json.prettyPrint(request.body))
+
     val maybeWidget = for {
-      w1 <- parseJson[Widget](request.body)
-      w2 <- db.create(w1)
+      //json <- normalizeWidgetJson(request.body)
+      w1   <- parseJson[Widget](request.body)
+      w2   <- db.create(w1)
     } yield w2
     
     maybeWidget match {
@@ -82,6 +92,12 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   
   def options(path: String) = Action {Ok("")}
   
+  
+  private[controllers] def normalizeWidgetJson(json: JsValue) = Try {
+    val out = json.as[JsObject] ++ Json.obj("id" -> (json \ "id").as[String].toInt)
+    println(Json.prettyPrint(out))
+    out
+  }
   
   private def HandleExceptions(ex: Throwable): Result = ex match {
     case e: UnprocessableException  => UnprocessableEntity(e.toJson)

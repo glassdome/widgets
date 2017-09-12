@@ -15,7 +15,6 @@ lazy val FlywayRebuild = Command.command("flyway") { state => "flywayClean" :: "
 commands += FlywayRebuild
 
 libraryDependencies ++= Seq(
-	//"org.postgresql" 	% "postgresql" 			% "9.4.1208.jre7",
 	"org.postgresql" 	% "postgresql" 			% "42.1.4",
 	"org.scalikejdbc" 	% "scalikejdbc_2.12" 	% "3.0.2",
 	"org.flywaydb" 		% "flyway-core" 		% "4.2.0",

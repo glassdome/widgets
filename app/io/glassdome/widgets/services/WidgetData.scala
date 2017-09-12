@@ -19,3 +19,23 @@ trait WidgetData {
 
 }
 
+trait Database[A] {
+  
+  def findById(id: Int): Option[A]
+  
+  def list(): Seq[A]
+  
+  def create(w: A): Try[A]
+  
+  def update(w: A): Try[A]
+  
+  def delete(id: Int): Try[A]
+}
+
+
+
+
+
+
+
+

@@ -14,6 +14,19 @@ POST    /widgets					controllers.Application.createWidget()
 PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 
 
+### USERS
+
+#GET 		/users				controllers.UserController.list()
+#GET 		/users/:id			controllers.UserController.findById(id: Int)
+
+#POST 		/users
+
+#PUT 		/users
+
+#DELETE 	/users/:id
+
+
+
 OPTIONS  /                           controllers.Application.options(path="")
 OPTIONS  /*path                      controllers.Application.options(path)
 

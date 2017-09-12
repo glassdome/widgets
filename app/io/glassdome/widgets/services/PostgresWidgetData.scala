@@ -2,41 +2,21 @@ package io.glassdome.widgets.services
 
 import scala.util.{Try, Success, Failure}
 import io.glassdome.widgets.models._
+import io.glassdome.widgets.services.errors._
 import scalikejdbc._
-import org.slf4j.LoggerFactory
+import play.api.Logger
+import io.glassdome.widgets.services.util.PgConnect
 
-
-
-object PgConnect {
-  def openConnection(timeoutMs: Long = 5000L) = {
-    
-    val (url, user, password) = (for {
-      url <- sys.env.get("FLYWAY_URL") orElse {
-        throw new RuntimeException("Missing env var FLYWAY_URL")
-      }
-      usr <- sys.env.get("FLYWAY_USER") orElse {
-        throw new RuntimeException("Missing env var FLYWAY_URL")
-      }
-      pwd <- sys.env.get("FLYWAY_PASSWORD") orElse {
-        throw new RuntimeException("Missing env var FLYWAY_URL")
-      }
-    } yield (url, usr, pwd)).get
-    
-    val settings = ConnectionPoolSettings(connectionTimeoutMillis = timeoutMs)
-    val driver = "org.postgresql.Driver"
-    
-    Class.forName(driver)
-    ConnectionPool.singleton(url, user, password, settings)    
-  }  
-}
 
 object PostgresWidgetData extends WidgetData {
   
+  private[this] val log = Logger(this.getClass)
   private implicit val session: DBSession = AutoSession
-  
 
   def findById(id: Int): Option[Widget] = {
-    ???
+    mapInstance {
+      sql"""SELECT * FROM widget WHERE id = ${id}"""
+    }.single.apply
   }
   
   def list(): Seq[Widget] = mapInstance {
@@ -45,48 +25,56 @@ object PostgresWidgetData extends WidgetData {
   
   
   def create(w: Widget): Try[Widget] = {
-    ???
+    // Validate: Conflict if widget.id already exists.
+    Try { sql"""
+      INSERT INTO widget VALUES(
+        ${w.id},
+        ${w.name},
+        ${w.owner},
+        ${w.description})
+      """.update.apply } map { _ => 
+        findById(w.id) getOrElse {
+          throw new RuntimeException("Unknown error creating widget")
+        }
+      }
   }
   
   def update(w: Widget): Try[Widget] = {
-    ???
+    // Validate: Conflict if widget does not exist.
+    Try {
+      sql"""
+        UPDATE widget SET
+          id = ${w.id},
+          name = ${w.name},
+          owner = ${w.owner},
+          description = ${w.description}
+        WHERE id = ${w.id}
+      """.update.apply} map { _ =>
+          findById(w.id) getOrElse {
+            throw new RuntimeException("Unknown error updating widget")
+          }
+      }
   }
-  
+ 
   def delete(id: Int): Try[Widget] = {
-    ???
+    findById(id).fold {
+      throw new WidgetNotFoundException(s"Widget with ID '$id' not found")
+    }{ widget =>
+      Try {
+        sql"""DELETE FROM widget WHERE id = ${id}""".update.apply
+      } map { _ => widget }
+    }
   }
-  
-  //(implicit session: DBSession = AutoSession)
+
   private[services] def mapInstance(sql: SQL[Widget, NoExtractor]) = {
     sql map { rs =>
       Widget(
           rs.int("id"),
           rs.string("name"),
+          rs.int("owner"),
           rs.stringOpt("description"))
     }
   }
-  
-  
-/*
-  private[data] def mapInstance(sql: SQL[GestaltResourceInstance, NoExtractor]) = {
-    sql map { rs => 
-      GestaltResourceInstance(
-        rs.any("id").asInstanceOf[UUID],
-        rs.any("resource_type_id").asInstanceOf[UUID],
-        rs.any("resource_state_id").asInstanceOf[UUID],
-        rs.any("org_id").asInstanceOf[UUID],
-        ResourceOwnerLink.fromJavaMap(rs.any("owner")),
-        rs.string("name"),
-        rs.stringOpt("description"),
-        Some( asHstore(rs.any("created")) ),
-        Some( asHstore(rs.any("modified")) ),
-        asHstoreOpt(rs.anyOpt("properties")),
-        asHstoreOpt(rs.anyOpt("variables")),
-        asListOpt(rs.arrayOpt("tags")),
-        asHstoreOpt(rs.anyOpt("auth")))   
-    }
-  }    
- */
-  
+
 }
 

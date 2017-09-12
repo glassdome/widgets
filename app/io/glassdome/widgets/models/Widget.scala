@@ -1,3 +1,9 @@
 package io.glassdome.widgets.models
 
-case class Widget(id: Int, name: String, description: Option[String] = None)
+import java.time.ZonedDateTime
+
+case class Widget(
+    id: Int, 
+    name: String,
+    owner: Int,
+    description: Option[String] = None)
