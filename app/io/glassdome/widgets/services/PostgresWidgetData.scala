@@ -8,7 +8,7 @@ import play.api.Logger
 import io.glassdome.widgets.services.util.PgConnect
 
 
-object PostgresWidgetData extends WidgetData {
+object PostgresWidgetData extends Database[Widget] {
   
   private[this] val log = Logger(this.getClass)
   private implicit val session: DBSession = AutoSession
