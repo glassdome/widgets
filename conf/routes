@@ -17,6 +17,7 @@ PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 ### USERS
 
 #GET 		/users				controllers.UserController.list()
+
 #GET 		/users/:id			controllers.UserController.findById(id: Int)
 
 #POST 		/users              controllers.UserController.createUser()
