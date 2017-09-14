@@ -41,29 +41,28 @@ class UserController @Inject()(cc: ControllerComponents) extends AbstractControl
 
 
 
-  def list() = Action { implicit request =>
+  def listUsers() = Action { implicit request =>
     println(Json.toJson("User :" + db.list.sortBy(_.id)))
     Ok(Json.toJson(db.list.sortBy(_.id)))
   }
 
-  def findAppUser(id: Int) = Action { implicit request =>
+  def findUser(id: Int) = Action { implicit request =>
     db.findById(id).fold {
       HandleExceptions(WidgetNotFoundException(s"User with ID '$id' not found."))
     }{ u => Ok(Json.toJson(u)) }
   }
 
-  def deleteAppUser(id: Int) = Action { implicit request =>
+  def deleteUser(id: Int) = Action { implicit request =>
     db.delete(id) match {
       case Failure(e) => HandleExceptions(e)
       case Success(u) =>  Ok(Json.toJson(u))
     }
   }
 
-  def createAppUser() = Action(parse.json) { implicit request =>
+  def createUser() = Action(parse.json) { implicit request =>
     log.debug("createAppUser(_): " + Json.prettyPrint(request.body))
 
     val maybeUser = for {
-    //json <- normalizeWidgetJson(request.body)
       u1   <- parseJson[appUser](request.body)
       u2   <- db.create(u1)
     } yield u2
@@ -74,7 +73,7 @@ class UserController @Inject()(cc: ControllerComponents) extends AbstractControl
     }
   }
 
-  def updateAppUser(id: Int) = Action(parse.json) { implicit request =>
+  def updateUser(id: Int) = Action(parse.json) { implicit request =>
 
     val maybeUser = for {
       u1 <- parseJson[appUser](request.body)

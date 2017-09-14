@@ -26,16 +26,16 @@ object PostgresUserData extends Database[appUser] {
 
   def create(u: appUser): Try[appUser] = {
     // Validate: Conflict if widget.id already exists.
-    if (!findById(u.id).isDefined){
+    if (findById(u.id).isEmpty){
       Try {
         sql"""
       INSERT INTO app_user VALUES(
         ${u.id},
         ${u.userName},
+        ${u.password},
         ${u.firstName},
-        ${u.lastName}
-        ${u.password}
-        ${u.email}""".update.apply
+        ${u.lastName},
+        ${u.email})""".update.apply
       } map { _ =>
         findById(u.id) getOrElse {
           throw new RuntimeException("Unknown error creating widget")
@@ -53,9 +53,9 @@ object PostgresUserData extends Database[appUser] {
         UPDATE app_user SET
           id = ${u.id},
           username = ${u.userName},
+          password = ${u.password},
           firstname = ${u.firstName},
-          lastname = ${u.lastName}
-          password = ${u.password}
+          lastname = ${u.lastName},
           email = ${u.email}
         WHERE id = ${u.id}
           """.update.apply
@@ -66,7 +66,6 @@ object PostgresUserData extends Database[appUser] {
       }
     }
     else throw ConflictException(s"Widget with ID '${u.id}' does not exist.")
-
   }//end update
 
 
@@ -85,9 +84,9 @@ object PostgresUserData extends Database[appUser] {
       appUser(
         rs.int("id"),
         rs.string("userName"),
+        rs.string("password"),
         rs.string("firstName"),
         rs.string("lastName"),
-        rs.string("password"),
         rs.string("email"))
     }
   }

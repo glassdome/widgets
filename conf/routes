@@ -16,15 +16,15 @@ PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 
 ### USERS
 
-#GET 		/users				controllers.UserController.list()
+GET 		/users				controllers.UserController.listUsers()
 
-#GET 		/users/:id			controllers.UserController.findById(id: Int)
+GET 		/users/:id			controllers.UserController.findUser(id: Int)
 
-#POST 		/users              controllers.UserController.createUser()
+POST 		/users              controllers.UserController.createUser()
 
-#PUT 		/users              controllers.UserController.updateUser(id:Int)
+PUT 		/users/:id              controllers.UserController.updateUser(id:Int)
 
-#DELETE 	/users/:id          controllers.UserController.deleteUser(id:Int)
+DELETE 	   /users/:id          controllers.UserController.deleteUser(id:Int)
 
 
 
