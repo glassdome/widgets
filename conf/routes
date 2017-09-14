@@ -19,11 +19,11 @@ PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 #GET 		/users				controllers.UserController.list()
 #GET 		/users/:id			controllers.UserController.findById(id: Int)
 
-#POST 		/users
+#POST 		/users              controllers.UserController.createUser()
 
-#PUT 		/users
+#PUT 		/users              controllers.UserController.updateUser(id:Int)
 
-#DELETE 	/users/:id
+#DELETE 	/users/:id          controllers.UserController.deleteUser(id:Int)
 
 
 
