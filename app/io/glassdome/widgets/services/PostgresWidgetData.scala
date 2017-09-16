@@ -8,8 +8,8 @@ import play.api.Logger
 import io.glassdome.widgets.services.util.PgConnect
 
 
-object PostgresWidgetData extends Database[Widget] {
-  
+object PostgresWidgetData extends WidgetData {
+
   private[this] val log = Logger(this.getClass)
   private implicit val session: DBSession = AutoSession
 
@@ -18,10 +18,16 @@ object PostgresWidgetData extends Database[Widget] {
       sql"""SELECT * FROM widget WHERE id = ${id}"""
     }.single.apply
   }
-  
+
   def list(): Seq[Widget] = mapInstance {
     sql"""SELECT * FROM widget;"""
   }.list.apply
+
+
+  def listWidgetsByUser(userId: Int) = mapInstance{
+    sql"""SELECT * FROM widget WHERE owner = ${userId} """
+  }.list.apply
+
   
   
   def create(w: Widget): Try[Widget] = {

@@ -3,6 +3,7 @@ package io.glassdome.widgets.services
 
 import scala.util.Try
 import io.glassdome.widgets.models.Widget
+import io.glassdome.widgets.services.PostgresWidgetData.mapInstance
 
 
 trait WidgetData {
@@ -17,7 +18,17 @@ trait WidgetData {
   
   def delete(id: Int): Try[Widget]
 
+  def listWidgetsByUser(userId: Int): Seq[Widget]
+
 }
+
+//trait DBRealations {
+//
+//  def listWidgetsByUser(userId: Int) = mapInstance{
+//    sql"""SELECT * FROM widget WHERE owner = ${userId} """
+//  }.list.apply
+//}
+
 
 trait Database[A] {
   
@@ -30,7 +41,9 @@ trait Database[A] {
   def update(w: A): Try[A]
   
   def delete(id: Int): Try[A]
+
 }
+
 
 
 

@@ -46,6 +46,10 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   def listWidgets() = Action { implicit request =>
     Ok(Json.toJson(db.list.sortBy(_.id)))
   }
+
+  def listWidgetsByUser(userId: Int) = Action{ implicit request =>
+    Ok(Json.toJson(db.listWidgetsByUser(userId)))
+  }
   
   def findWidget(id: Int) = Action { implicit request =>
     db.findById(id).fold {

@@ -14,17 +14,26 @@ POST    /widgets					controllers.Application.createWidget()
 PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 
 
+### WIDGETS By USERS
+
+GET       /users/:userId/widgets    controllers.Application.listWidgetsByUser(userId: Int)
+
+
+
 ### USERS
 
-GET 		/users				controllers.UserController.listUsers()
+GET 		/users				    controllers.UserController.listUsers()
 
-GET 		/users/:id			controllers.UserController.findUser(id: Int)
+GET 		/users/:id			    controllers.UserController.findUser(id: Int)
 
-POST 		/users              controllers.UserController.createUser()
+POST 		/users                  controllers.UserController.createUser()
 
 PUT 		/users/:id              controllers.UserController.updateUser(id:Int)
 
-DELETE 	   /users/:id          controllers.UserController.deleteUser(id:Int)
+DELETE 	   /users/:id               controllers.UserController.deleteUser(id:Int)
+
+
+
 
 
 
