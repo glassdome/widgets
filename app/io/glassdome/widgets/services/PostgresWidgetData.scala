@@ -33,6 +33,8 @@ object PostgresWidgetData extends Database[Widget] {
         ${w.id},
         ${w.name},
         ${w.owner},
+        ${w.kind},
+        ${w.image},
         ${w.description})
       """.update.apply
        } map { _ =>
@@ -53,6 +55,8 @@ object PostgresWidgetData extends Database[Widget] {
           id = ${w.id},
           name = ${w.name},
           owner = ${w.owner},
+          kind = ${w.kind},
+          image = ${w.image},
           description = ${w.description}
         WHERE id = ${w.id}
       """.update.apply
@@ -83,6 +87,8 @@ object PostgresWidgetData extends Database[Widget] {
           rs.int("id"),
           rs.string("name"),
           rs.int("owner"),
+          rs.stringOpt("kind"),
+          rs.stringOpt("image"),
           rs.stringOpt("description"))
     }
   }

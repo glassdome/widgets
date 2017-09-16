@@ -17,6 +17,8 @@ CREATE TABLE widget(
   id  			BIGSERIAL PRIMARY KEY,
   name 			VARCHAR NOT NULL,
   owner  		BIGINT REFERENCES app_user ON DELETE CASCADE,
+  kind          VARCHAR,
+  image         VARCHAR,
   description 	VARCHAR,
   created 		TIMESTAMPTZ DEFAULT NOW(),
 
