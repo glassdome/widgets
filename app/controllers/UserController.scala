@@ -63,7 +63,7 @@ class UserController @Inject()(cc: ControllerComponents) extends AbstractControl
     log.debug("createAppUser(_): " + Json.prettyPrint(request.body))
 
     val maybeUser = for {
-      u1   <- parseJson[appUser](request.body)
+      u1   <- parseJson[AppUser](request.body)
       u2   <- db.create(u1)
     } yield u2
 
@@ -76,7 +76,7 @@ class UserController @Inject()(cc: ControllerComponents) extends AbstractControl
   def updateUser(id: Int) = Action(parse.json) { implicit request =>
 
     val maybeUser = for {
-      u1 <- parseJson[appUser](request.body)
+      u1 <- parseJson[AppUser](request.body)
       u2 <- db.update(u1)
     } yield u2
 

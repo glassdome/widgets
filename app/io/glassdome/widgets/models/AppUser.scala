@@ -1,7 +1,7 @@
 package io.glassdome.widgets.models
 
 
-case class appUser(
+case class AppUser(
                    id: Int,
                    userName: String,
                    password: String,

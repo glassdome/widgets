@@ -8,23 +8,23 @@ import play.api.Logger
 import io.glassdome.widgets.services.util.PgConnect
 
 
-object PostgresUserData extends Database[appUser] {
+object PostgresUserData extends Database[AppUser] {
 
   private[this] val log = Logger(this.getClass)
   private implicit val session: DBSession = AutoSession
 
-  def findById(id: Int): Option[appUser] = {
+  def findById(id: Int): Option[AppUser] = {
     mapInstance {
       sql"""SELECT * FROM app_user WHERE id = ${id}"""
     }.single.apply
   }
 
-  def list(): Seq[appUser] = mapInstance {
+  def list(): Seq[AppUser] = mapInstance {
     sql"""SELECT * FROM app_user;"""
   }.list.apply
 
 
-  def create(u: appUser): Try[appUser] = {
+  def create(u: AppUser): Try[AppUser] = {
     // Validate: Conflict if widget.id already exists.
     if (findById(u.id).isEmpty){
       Try {
@@ -44,7 +44,7 @@ object PostgresUserData extends Database[appUser] {
     } else throw ConflictException("User IDs must be unique")
   }//end create
 
-  def update(u: appUser): Try[appUser] = {
+  def update(u: AppUser): Try[AppUser] = {
     // Validate: Conflict if widget does not exist.
     if (findById(u.id).isDefined)
     {
@@ -69,7 +69,7 @@ object PostgresUserData extends Database[appUser] {
   }//end update
 
 
-  def delete(id: Int): Try[appUser] = {
+  def delete(id: Int): Try[AppUser] = {
     findById(id).fold {
       throw WidgetNotFoundException(s"User with ID '$id' not found")
     }{ user =>
@@ -79,9 +79,9 @@ object PostgresUserData extends Database[appUser] {
     }
   }
 
-  private[services] def mapInstance(sql: SQL[appUser, NoExtractor]) = {
+  private[services] def mapInstance(sql: SQL[AppUser, NoExtractor]) = {
     sql map { rs =>
-      appUser(
+      AppUser(
         rs.int("id"),
         rs.string("userName"),
         rs.string("password"),

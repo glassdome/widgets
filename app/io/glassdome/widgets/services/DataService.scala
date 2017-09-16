@@ -1,7 +1,7 @@
 package io.glassdome.widgets.services
 
 import scala.util.Try
-import io.glassdome.widgets.models.{Widget, appUser}
+import io.glassdome.widgets.models.{Widget, AppUser}
 
 //class DataService(db: WidgetData) {
 //
@@ -31,17 +31,17 @@ class DataService(db: Database[Widget]) {
 
 }
 
-class DataService2(db: Database[appUser] ){
+class DataService2(db: Database[AppUser] ){
 
-  def findById(id: Int): Option[appUser] = db.findById(id)
+  def findById(id: Int): Option[AppUser] = db.findById(id)
 
-  def list(): Seq[appUser] = db.list()
+  def list(): Seq[AppUser] = db.list()
 
-  def create(u: appUser): Try[appUser] = db.create(u)
+  def create(u: AppUser): Try[AppUser] = db.create(u)
 
-  def update(u: appUser): Try[appUser] = db.update(u)
+  def update(u: AppUser): Try[AppUser] = db.update(u)
 
-  def delete(id: Int): Try[appUser] = db.delete(id)
+  def delete(id: Int): Try[AppUser] = db.delete(id)
 
 }
 
