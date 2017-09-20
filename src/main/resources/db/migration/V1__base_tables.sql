@@ -27,12 +27,31 @@ CREATE TABLE widget(
 
 
 CREATE TABLE widget_share (
-  owner  	BIGINT REFERENCES app_user ON DELETE CASCADE,
-  widget 	BIGINT REFERENCES widget ON DELETE CASCADE,
-  app_user	BIGINT REFERENCES app_user ON DELETE CASCADE,
+  owner  		BIGINT REFERENCES app_user ON DELETE CASCADE,
+  widget 		BIGINT REFERENCES widget ON DELETE CASCADE,
+  shared_with	BIGINT REFERENCES app_user ON DELETE CASCADE,
   
   CONSTRAINT pk_widget_share PRIMARY KEY (owner, widget, app_user)
 );
+
+
+
+
+
+
+/*
+CREATE TABLE widget_share_invite(
+	owner		BIGINT REFERENCES app_user,
+	invitee		BIGINT,
+	widget		BIGINT,
+	message		VARCHAR,
+	status		VARCHAR, -- [OPEN | ACCEPTED | REJECTED]
+	created		TIMESTAMPTZ DEFAULT NOW(),
+	expires		TIMESTAMPTZ
+);
+*/
+
+
 
 
 /*
@@ -44,3 +63,9 @@ wtatus 	(open|accepted|rejected)
 created
 expires 	[opt] default: never
 */
+
+
+
+
+
+

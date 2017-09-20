@@ -22,3 +22,10 @@ INSERT INTO widget(name, owner, kind, image, description) VALUES('foxtrot',2, 'k
 
 
 
+/* SHARE WIDGETS */
+  owner  		BIGINT REFERENCES app_user ON DELETE CASCADE,
+  widget 		BIGINT REFERENCES widget ON DELETE CASCADE,
+  shared_with	BIGINT REFERENCES app_user ON DELETE CASCADE,
+  
+INSERT INTO widget_share(owner, widget, shared_with) VALUE(2, 5, 1);
+

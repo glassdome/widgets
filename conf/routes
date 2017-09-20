@@ -16,8 +16,8 @@ PUT		/widgets/:id				controllers.Application.updateWidget(id: Int)
 
 ### WIDGETS By USERS
 
-GET       /users/:userId/widgets    controllers.Application.listWidgetsByUser(userId: Int)
-
+GET       /users/:userId/widgets    		controllers.Application.listWidgetsByUser(userId: Int)
+#GET       /users/:userId/widgets/:widgetId
 
 
 ### USERS

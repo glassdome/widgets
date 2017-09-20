@@ -37,7 +37,7 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
     
   private[this] val log = LoggerFactory.getLogger(this.getClass)
   private val db = new DataService(PostgresWidgetData)
-
+  
   
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok("Welcome to Widgets!")
@@ -80,8 +80,11 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
   }
 
   def updateWidget(id: Int) = Action(parse.json) { implicit request =>
+    
+    // val json = request.body.as[JsObject] ++ Json.obj("id" -> id)
 
     val maybeWidget = for {
+      //w0 <- validateWidgetJson(request.body)
       w1 <- parseJson[Widget](request.body)
       w2 <- db.update(w1)
     } yield w2
